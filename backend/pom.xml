@@ -26,9 +26,17 @@
         <tag/>
         <url/>
     </scm>
+
     <properties>
         <java.version>21</java.version>
+
+        <!-- 集中管理所有未被 spring-boot-starter-parent 托管的第三方依赖版本号。
+             之后新增依赖，只需要在这里加一行 <xxx.version>，
+             下面 dependencies 里统一用 ${xxx.version} 引用，
+             避免同一个依赖在多处写死版本号导致以后升级漏改。 -->
+        <mybatis-spring-boot.version>4.0.1</mybatis-spring-boot.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -37,7 +45,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>4.0.1</version>
+            <version>${mybatis-spring-boot.version}</version>
         </dependency>
 
         <dependency>
@@ -58,7 +66,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter-test</artifactId>
-            <version>4.0.1</version>
+            <version>${mybatis-spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
