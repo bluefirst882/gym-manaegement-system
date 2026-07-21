@@ -28,4 +28,14 @@ public class AuthController {
         LoginResponse response = authService.login(request);
         return Result.success("登录成功", response);
     }
+
+    /**
+     * 管理后台登录：仅系统管理员和场馆管理员可登录。
+     * 普通客户仍使用 /api/auth/login 登录微信小程序。
+     */
+    @PostMapping("/admin-login")
+    public Result<LoginResponse> adminLogin(@RequestBody LoginRequest request) {
+        LoginResponse response = authService.loginAdmin(request);
+        return Result.success("登录成功", response);
+    }
 }

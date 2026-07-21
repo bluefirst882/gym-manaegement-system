@@ -54,6 +54,16 @@ public class ActivityRegistrationController {
     }
 
     /**
+     * 客户取消待审核报名
+     * PUT /api/activity-registration/{id}/cancel
+     */
+    @PutMapping("/activity-registration/{id}/cancel")
+    public Result<Void> cancelRegistration(@PathVariable Long id) {
+        registrationService.cancel(id);
+        return Result.success("取消成功");
+    }
+
+    /**
      * 删除报名
      * DELETE /api/activity-registration/{id}
      */

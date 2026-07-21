@@ -22,7 +22,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // 不需要认证的路径
     private static final String[] EXCLUDED_PATHS = {
-            "/api/auth/login"
+            "/api/auth/login",
+            "/api/auth/admin-login"
     };
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {

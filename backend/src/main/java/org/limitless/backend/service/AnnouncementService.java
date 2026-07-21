@@ -91,6 +91,17 @@ public class AnnouncementService {
         announcementMapper.updateById(update);
     }
 
+    public void toggleTop(Integer id) {
+        Announcement existing = announcementMapper.selectById(id);
+        if (existing == null) {
+            throw new BusinessException("公告不存在");
+        }
+        Announcement update = new Announcement();
+        update.setId(id);
+        update.setIsTop(existing.getIsTop() != null && existing.getIsTop() == 1 ? 0 : 1);
+        announcementMapper.updateById(update);
+    }
+
     private String generateAnnouncementNo() {
         return "N" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
                + String.format("%03d", (int)(Math.random() * 1000));

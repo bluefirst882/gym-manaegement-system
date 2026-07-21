@@ -65,4 +65,10 @@ public class AnnouncementController {
         announcementService.offline(id);
         return Result.success("下架成功");
     }
+
+    @PutMapping("/announcement/{id}/toggle-top")
+    public Result<Void> toggleTopAnnouncement(@PathVariable Integer id) {
+        announcementService.toggleTop(id);
+        return Result.success("操作成功");
+    }
 }

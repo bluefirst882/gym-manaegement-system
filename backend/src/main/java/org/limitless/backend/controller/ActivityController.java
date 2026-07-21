@@ -30,6 +30,15 @@ public class ActivityController {
     }
 
     /**
+     * 查询活动详情（微信小程序使用）
+     * GET /api/activity/{id}
+     */
+    @GetMapping("/activity/{id}")
+    public Result<Activity> getActivity(@PathVariable Integer id) {
+        return Result.success("查询成功", activityService.selectById(id));
+    }
+
+    /**
      * 新增活动
      * POST /api/activity
      */

@@ -120,6 +120,23 @@ public class BookingService {
         bookingMapper.updateById(update);
     }
 
+    public void audit(Long id, BookingAuditRequest request) {
+        Booking booking = bookingMapper.selectById(id);
+        if (booking == null) {
+            throw new BusinessException("预约记录不存在");
+        }
+        if (!"PENDING".equals(booking.getStatus())) {
+            throw new BusinessException("仅待审核预约可以审核");
+        }
+        if (!"APPROVED".equals(request.getStatus()) && !"REJECTED".equals(request.getStatus())) {
+            throw new BusinessException("审核状态必须为通过或拒绝");
+        }
+        Booking update = new Booking();
+        update.setId(id);
+        update.setStatus(request.getStatus());
+        bookingMapper.updateById(update);
+    }
+
     public void delete(Long id) {
         Booking booking = bookingMapper.selectById(id);
         if (booking == null) {

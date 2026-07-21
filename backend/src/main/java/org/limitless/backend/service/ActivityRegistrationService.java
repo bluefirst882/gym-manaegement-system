@@ -71,6 +71,20 @@ public class ActivityRegistrationService {
         registrationMapper.updateById(update);
     }
 
+    public void cancel(Long id) {
+        ActivityRegistration registration = registrationMapper.selectById(id);
+        if (registration == null) {
+            throw new BusinessException("报名记录不存在");
+        }
+        if (!"PENDING".equals(registration.getAuditStatus())) {
+            throw new BusinessException("仅待审核报名可以取消");
+        }
+        ActivityRegistration update = new ActivityRegistration();
+        update.setId(id);
+        update.setAuditStatus("CANCELLED");
+        registrationMapper.updateById(update);
+    }
+
     public void delete(Long id) {
         ActivityRegistration existing = registrationMapper.selectById(id);
         if (existing == null) {

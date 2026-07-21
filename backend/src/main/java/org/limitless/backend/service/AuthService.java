@@ -5,6 +5,8 @@ import org.limitless.backend.dto.LoginRequest;
 import org.limitless.backend.dto.LoginResponse;
 import org.limitless.backend.entity.SysUser;
 import org.limitless.backend.mapper.SysUserMapper;
+import org.limitless.backend.mapper.SysRoleMapper;
+import org.limitless.backend.entity.SysRole;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +14,15 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final SysUserMapper userMapper;
+    private final SysRoleMapper roleMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final org.limitless.backend.util.JwtUtil jwtUtil;
 
-    public AuthService(SysUserMapper userMapper,
+    public AuthService(SysUserMapper userMapper, SysRoleMapper roleMapper,
                        BCryptPasswordEncoder passwordEncoder,
                        org.limitless.backend.util.JwtUtil jwtUtil) {
         this.userMapper = userMapper;
+        this.roleMapper = roleMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
@@ -60,5 +64,16 @@ public class AuthService {
         );
 
         return new LoginResponse(token, userInfo);
+    }
+
+    /** 管理端登录仅允许角色编码为 ADMIN 或 MANAGER 的用户。 */
+    public LoginResponse loginAdmin(LoginRequest request) {
+        LoginResponse response = login(request);
+        Integer roleId = response.getUserInfo().getRoleId();
+        SysRole role = roleId == null ? null : roleMapper.selectById(roleId);
+        if (role == null || (!"ADMIN".equals(role.getRoleCode()) && !"MANAGER".equals(role.getRoleCode()))) {
+            throw new BusinessException(403, "您没有管理后台访问权限，请使用微信小程序客户端");
+        }
+        return response;
     }
 }

@@ -11,6 +11,8 @@ public class ActivityUpdateRequest {
     private String title;
     private Integer categoryId;
     private String location;
+    private String startTime;
+    private String endTime;
     private String rules;
     private String description;
     private String contact;

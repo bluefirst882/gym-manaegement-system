@@ -53,6 +53,16 @@ public class BookingController {
     }
 
     /**
+     * 管理员审核预约
+     * PUT /api/booking/{id}/audit
+     */
+    @PutMapping("/booking/{id}/audit")
+    public Result<Void> auditBooking(@PathVariable Long id, @RequestBody BookingAuditRequest request) {
+        bookingService.audit(id, request);
+        return Result.success("审核成功");
+    }
+
+    /**
      * 删除预约
      * DELETE /api/booking/{id}
      */

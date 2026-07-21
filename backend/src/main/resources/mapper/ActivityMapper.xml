@@ -48,6 +48,8 @@
             <if test="coverImage != null">cover_image = #{coverImage},</if>
             <if test="categoryId != null">category_id = #{categoryId},</if>
             <if test="location != null">location = #{location},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
             <if test="status != null">status = #{status},</if>
             <if test="maxParticipants != null">max_participants = #{maxParticipants},</if>
             <if test="awards != null">awards = #{awards},</if>

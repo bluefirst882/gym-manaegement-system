@@ -22,4 +22,5 @@ public class ActivityCreateRequest {
     private String registrationMethod;
     private Integer maxParticipants;
     private String awards;
+    private String status;
 }

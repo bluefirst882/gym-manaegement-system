@@ -33,6 +33,14 @@ public class ActivityService {
                 request.getPageSize(), pageInfo.getTotal());
     }
 
+    public Activity selectById(Integer id) {
+        Activity activity = activityMapper.selectById(id);
+        if (activity == null) {
+            throw new BusinessException("活动不存在");
+        }
+        return activity;
+    }
+
     public Integer create(ActivityCreateRequest request) {
         if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
             throw new BusinessException("活动主题不能为空");
@@ -50,7 +58,7 @@ public class ActivityService {
         if (request.getEndTime() != null) {
             activity.setEndTime(LocalDateTime.parse(request.getEndTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
-        activity.setStatus("DRAFT");
+        activity.setStatus(request.getStatus() != null ? request.getStatus() : "DRAFT");
         activity.setRegistrationMethod(request.getRegistrationMethod() != null ? request.getRegistrationMethod() : "ONLINE");
         activity.setMaxParticipants(request.getMaxParticipants());
         activity.setAwards(request.getAwards());
@@ -76,6 +84,12 @@ public class ActivityService {
         activity.setCoverImage(request.getCoverImage());
         activity.setCategoryId(request.getCategoryId());
         activity.setLocation(request.getLocation());
+        if (request.getStartTime() != null) {
+            activity.setStartTime(LocalDateTime.parse(request.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+        if (request.getEndTime() != null) {
+            activity.setEndTime(LocalDateTime.parse(request.getEndTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
         activity.setStatus(request.getStatus());
         activity.setMaxParticipants(request.getMaxParticipants());
         activity.setAwards(request.getAwards());
