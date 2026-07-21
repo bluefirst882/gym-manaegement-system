@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.EquipmentRentalMapper">
+
+    <resultMap id="rentalMap" type="EquipmentRental">
+        <id property="id" column="id"/>
+        <result property="equipmentName" column="equipment_name"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="rentalMap">
+        SELECT r.*, e.name AS equipment_name
+        FROM equipment_rental r
+        LEFT JOIN equipment e ON r.equipment_id = e.id
+        WHERE r.id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="rentalMap">
+        SELECT r.*, e.name AS equipment_name
+        FROM equipment_rental r
+        LEFT JOIN equipment e ON r.equipment_id = e.id
+        <where>
+            <if test="borrower != null and borrower != ''">
+                AND r.borrower LIKE CONCAT('%', #{borrower}, '%')
+            </if>
+            <if test="equipmentId != null">
+                AND r.equipment_id = #{equipmentId}
+            </if>
+            <if test="status != null and status != ''">
+                AND r.status = #{status}
+            </if>
+            <if test="startTimeStart != null and startTimeStart != ''">
+                AND r.start_time >= #{startTimeStart}
+            </if>
+            <if test="startTimeEnd != null and startTimeEnd != ''">
+                AND r.start_time &lt;= #{startTimeEnd}
+            </if>
+        </where>
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM equipment_rental r
+        <where>
+            <if test="borrower != null and borrower != ''">
+                AND r.borrower LIKE CONCAT('%', #{borrower}, '%')
+            </if>
+            <if test="equipmentId != null">
+                AND r.equipment_id = #{equipmentId}
+            </if>
+            <if test="status != null and status != ''">
+                AND r.status = #{status}
+            </if>
+            <if test="startTimeStart != null and startTimeStart != ''">
+                AND r.start_time >= #{startTimeStart}
+            </if>
+            <if test="startTimeEnd != null and startTimeEnd != ''">
+                AND r.start_time &lt;= #{startTimeEnd}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equipment_rental (rental_no, equipment_id, quantity, start_time, end_time,
+                                      borrower, contact_phone, rental_price, status)
+        VALUES (#{rentalNo}, #{equipmentId}, #{quantity}, #{startTime}, #{endTime},
+                #{borrower}, #{contactPhone}, #{rentalPrice}, #{status})
+    </insert>
+
+    <update id="updateById">
+        UPDATE equipment_rental
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="actualReturnTime != null">actual_return_time = #{actualReturnTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.ActivityRegistrationMapper">
+
+    <resultMap id="regMap" type="ActivityRegistration">
+        <id property="id" column="id"/>
+        <result property="activityTitle" column="activity_title"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="customerPhone" column="customer_phone"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="regMap">
+        SELECT r.*, a.title AS activity_title, u.real_name AS customer_name, u.phone AS customer_phone
+        FROM activity_registration r
+        LEFT JOIN activity a ON r.activity_id = a.id
+        LEFT JOIN sys_user u ON r.user_id = u.id
+        WHERE r.id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="regMap">
+        SELECT r.*, a.title AS activity_title, u.real_name AS customer_name, u.phone AS customer_phone
+        FROM activity_registration r
+        LEFT JOIN activity a ON r.activity_id = a.id
+        LEFT JOIN sys_user u ON r.user_id = u.id
+        <where>
+            <if test="activityId != null">
+                AND r.activity_id = #{activityId}
+            </if>
+            <if test="activityTitle != null and activityTitle != ''">
+                AND a.title LIKE CONCAT('%', #{activityTitle}, '%')
+            </if>
+            <if test="userId != null">
+                AND r.user_id = #{userId}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND r.audit_status = #{auditStatus}
+            </if>
+            <if test="regStartTime != null and regStartTime != ''">
+                AND r.created_at >= #{regStartTime}
+            </if>
+            <if test="regEndTime != null and regEndTime != ''">
+                AND r.created_at &lt;= #{regEndTime}
+            </if>
+        </where>
+        ORDER BY r.created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO activity_registration (registration_no, activity_id, user_id, activity_type, remark, audit_status)
+        VALUES (#{registrationNo}, #{activityId}, #{userId}, #{activityType}, #{remark}, #{auditStatus})
+    </insert>
+
+    <update id="updateById">
+        UPDATE activity_registration
+        <set>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="auditComment != null">audit_comment = #{auditComment},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM activity_registration WHERE id = #{id}
+    </delete>
+</mapper>

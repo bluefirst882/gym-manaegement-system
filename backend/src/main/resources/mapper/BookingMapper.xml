@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.BookingMapper">
+
+    <resultMap id="bookingMap" type="Booking">
+        <id property="id" column="id"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="customerPhone" column="customer_phone"/>
+        <result property="venueName" column="venue_name"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="bookingMap">
+        SELECT b.*, u.real_name AS customer_name, u.phone AS customer_phone
+        FROM booking b
+        LEFT JOIN sys_user u ON b.user_id = u.id
+        WHERE b.id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="bookingMap">
+        SELECT b.*, u.real_name AS customer_name, u.phone AS customer_phone
+        FROM booking b
+        LEFT JOIN sys_user u ON b.user_id = u.id
+        <where>
+            <if test="bookingNo != null and bookingNo != ''">
+                AND b.booking_no LIKE CONCAT('%', #{bookingNo}, '%')
+            </if>
+            <if test="userId != null">
+                AND b.user_id = #{userId}
+            </if>
+            <if test="venueId != null">
+                AND b.venue_id = #{venueId}
+            </if>
+            <if test="status != null and status != ''">
+                AND b.status = #{status}
+            </if>
+            <if test="paymentStatus != null and paymentStatus != ''">
+                AND b.payment_status = #{paymentStatus}
+            </if>
+            <if test="bookingDateStart != null and bookingDateStart != ''">
+                AND b.booking_date >= #{bookingDateStart}
+            </if>
+            <if test="bookingDateEnd != null and bookingDateEnd != ''">
+                AND b.booking_date &lt;= #{bookingDateEnd}
+            </if>
+        </where>
+        ORDER BY b.created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO booking (booking_no, user_id, venue_id, venue_name, venue_address,
+                             booking_date, start_time, end_time, duration_hours, remark,
+                             status, source, fee_amount, payment_status)
+        VALUES (#{bookingNo}, #{userId}, #{venueId}, #{venueName}, #{venueAddress},
+                #{bookingDate}, #{startTime}, #{endTime}, #{durationHours}, #{remark},
+                #{status}, #{source}, #{feeAmount}, #{paymentStatus})
+    </insert>
+
+    <update id="updateById">
+        UPDATE booking
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="checkinTime != null">checkin_time = #{checkinTime},</if>
+            <if test="checkoutTime != null">checkout_time = #{checkoutTime},</if>
+            <if test="attendeeCount != null">attendee_count = #{attendeeCount},</if>
+            <if test="feeAmount != null">fee_amount = #{feeAmount},</if>
+            <if test="paymentStatus != null">payment_status = #{paymentStatus},</if>
+            <if test="paymentMethod != null">payment_method = #{paymentMethod},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM booking WHERE id = #{id}
+    </delete>
+
+    <select id="checkTimeConflict" resultType="int">
+        SELECT COUNT(*) FROM booking
+        WHERE venue_id = #{venueId}
+          AND booking_date = #{bookingDate}
+          AND status IN ('PENDING', 'APPROVED')
+          AND (#{startTime} &lt; end_time AND #{endTime} > start_time)
+          <if test="excludeId != null">
+              AND id != #{excludeId}
+          </if>
+    </select>
+
+</mapper>
