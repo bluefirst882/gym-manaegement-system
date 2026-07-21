@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="empty" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:elif="{{list.length === 0}}">暂无预约记录</view>
+ 
+  <view class="card booking-card" wx:for="{{list}}" wx:key="id">
+    <view class="top">
+      <text class="no">{{item.bookingNo}}</text>
+      <text class="tag tag-{{item.status === 'COMPLETED' ? 'success' : item.status === 'APPROVED' ? 'primary' : item.status === 'PENDING' ? 'warning' : 'info'}}">
+        {{item.status === 'PENDING' ? '待审核' : item.status === 'APPROVED' ? '已通过' : item.status === 'REJECTED' ? '已拒绝' : item.status === 'CANCELLED' ? '已取消' : '已完成'}}
+      </text>
+    </view>
+    <view class="name">{{item.venueName}}</view>
+    <view class="meta">📅 {{item.bookingDate}} {{item.startTime}}-{{item.endTime}}</view>
+    <view class="meta">📍 {{item.venueAddress}}</view>
+    <view class="bottom">
+      <text class="price">¥{{item.feeAmount}}
+        <text class="pay-status {{item.paymentStatus === 'PAID' ? 'paid' : 'unpaid'}}">{{item.paymentStatus === 'PAID' ? '已支付' : '待支付'}}</text>
+      </text>
+      <view class="ops">
+        <button wx:if="{{item.paymentStatus === 'UNPAID' && (item.status === 'APPROVED' || item.status === 'PENDING')}}" size="mini" class="pay-btn" data-id="{{item.id}}" bindtap="onPay">去支付</button>
+        <button wx:if="{{item.status === 'PENDING' || item.status === 'APPROVED'}}" size="mini" class="cancel-btn" data-id="{{item.id}}" bindtap="onCancel">取消</button>
+      </view>
+    </view>
+  </view>
+</view>

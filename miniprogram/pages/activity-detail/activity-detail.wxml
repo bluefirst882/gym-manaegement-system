@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="banner">{{act.categoryName === '赛事活动' ? '🏆' : act.categoryName === '体验活动' ? '🎯' : act.categoryName === '培训课程' ? '📚' : '🎉'}}</view>
+ 
+  <view class="card">
+    <view class="title">{{act.title}}</view>
+    <view class="row"><text class="label">分类</text><text>{{act.categoryName}}</text></view>
+    <view class="row"><text class="label">地点</text><text>{{act.location}}</text></view>
+    <view class="row"><text class="label">时间</text><text>{{act.startTime}} 至 {{act.endTime}}</text></view>
+    <view class="row"><text class="label">人数上限</text><text>{{act.maxParticipants}} 人</text></view>
+    <view class="row"><text class="label">费用</text><text class="price">{{act.feeType === 'FREE' ? '免费' : '¥' + act.feeAmount}}</text></view>
+    <view class="row" wx:if="{{act.awards}}"><text class="label">奖项</text><text>{{act.awards}}</text></view>
+    <view class="row" wx:if="{{act.contact}}"><text class="label">咨询</text><text>{{act.contact}}</text></view>
+  </view>
+ 
+  <view class="card" wx:if="{{act.rules}}">
+    <view class="sec-title">活动规则</view>
+    <view class="text">{{act.rules}}</view>
+  </view>
+ 
+  <view class="card" wx:if="{{act.description}}">
+    <view class="sec-title">活动介绍</view>
+    <view class="text">{{act.description}}</view>
+  </view>
+ 
+  <view class="card">
+    <view class="sec-title">报名信息</view>
+    <view class="form-row">
+      <text class="label">报名类型</text>
+      <picker range="{{types}}" value="{{typeIndex}}" bindchange="onType">
+        <view class="picker">{{types[typeIndex]}} ▾</view>
+      </picker>
+    </view>
+    <textarea class="remark" placeholder="备注（可选）" value="{{remark}}" bindinput="onRemark" />
+  </view>
+ 
+  <view class="footer">
+    <button class="btn-primary" bindtap="submit" loading="{{submitting}}">立即报名</button>
+  </view>
+</view>

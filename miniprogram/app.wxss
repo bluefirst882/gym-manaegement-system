@@ -1,0 +1,55 @@
+page {
+  background: #f5f6fa;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #303133;
+  font-size: 28rpx;
+}
+ 
+.container { padding-bottom: 30rpx; }
+ 
+/* 主题色 */
+.primary { color: #ee5253; }
+ 
+/* 卡片 */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  margin: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+ 
+/* 主按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, #ff6b6b, #ee5253);
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  padding: 20rpx 0;
+  text-align: center;
+}
+.btn-primary.disabled { opacity: 0.5; }
+ 
+/* 空态 */
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 80rpx 0;
+  font-size: 26rpx;
+}
+ 
+/* 价格 */
+.price { color: #ee5253; font-weight: 700; }
+ 
+/* 标签 */
+.tag {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+.tag-success { background: #f6ffed; color: #389e0d; }
+.tag-warning { background: #fff7e6; color: #d48806; }
+.tag-danger { background: #fff1f0; color: #cf1322; }
+.tag-info { background: #f5f5f5; color: #999; }
+.tag-primary { background: #e6f7ff; color: #096dd9; }

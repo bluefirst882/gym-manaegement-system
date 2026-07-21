@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="card venue-summary">
+    <view class="name">{{venue.venueName}}</view>
+    <view class="meta">{{venue.venueAddress}} · <text class="price">¥{{venue.feeAmount}}{{venue.feeType === 'ONCE' ? '/次' : '/小时'}}</text></view>
+  </view>
+ 
+  <view class="card">
+    <view class="sec-title">选择日期</view>
+    <scroll-view scroll-x class="date-scroll">
+      <view class="date-item {{dateIndex === index ? 'active' : ''}}" wx:for="{{dates}}" wx:key="value" data-i="{{index}}" bindtap="pickDate">
+        <view class="d-label">{{item.label}}</view>
+        <view class="d-sub">{{item.sub}}</view>
+      </view>
+    </scroll-view>
+  </view>
+ 
+  <view class="card">
+    <view class="sec-title">开始时间 <text class="hint">（已选：{{startIndex >= 0 ? times[startIndex] : '未选'}}）</text></view>
+    <view class="time-grid">
+      <view class="time-item {{startIndex === index ? 'active' : ''}}" wx:for="{{times}}" wx:key="*this" data-i="{{index}}" bindtap="pickStart">{{item}}</view>
+    </view>
+  </view>
+ 
+  <view class="card">
+    <view class="sec-title">结束时间 <text class="hint">（已选：{{endIndex >= 0 ? times[endIndex] : '未选'}}）</text></view>
+    <view class="time-grid">
+      <view class="time-item {{endIndex === index ? 'active' : ''}} {{index <= startIndex ? 'disabled' : ''}}" wx:for="{{times}}" wx:key="*this" data-i="{{index}}" bindtap="pickEnd">{{item}}</view>
+    </view>
+  </view>
+ 
+  <view class="card">
+    <view class="sec-title">备注（可选）</view>
+    <textarea class="remark" placeholder="如：需要安全指导、团队活动等" value="{{remark}}" bindinput="onRemark" />
+  </view>
+ 
+  <view class="footer">
+    <button class="btn-primary" bindtap="submit" loading="{{submitting}}">提交预约</button>
+  </view>
+</view>

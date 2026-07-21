@@ -1,0 +1,44 @@
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="hello">你好，{{userInfo.realName || '探险家'}} ⚡</view>
+    <view class="sub">今天也要挑战自我</view>
+  </view>
+ 
+  <!-- 公告轮播 -->
+  <swiper class="banner" autoplay circular indicator-dots indicator-color="rgba(255,255,255,.5)" indicator-active-color="#fff">
+    <swiper-item wx:for="{{notices}}" wx:key="id" bindtap="goNotice" data-id="{{item.id}}">
+      <view class="banner-item">
+        <view class="banner-badge">公告</view>
+        <view class="banner-title">{{item.title}}</view>
+        <view class="banner-summary">{{item.summary}}</view>
+      </view>
+    </swiper-item>
+  </swiper>
+ 
+  <!-- 快捷入口 -->
+  <view class="nav">
+    <view class="nav-item" bindtap="goVenues"><view class="nav-icon">🏟️</view><text>场地预约</text></view>
+    <view class="nav-item" bindtap="goActivities"><view class="nav-icon">🚩</view><text>活动报名</text></view>
+    <view class="nav-item" bindtap="goMyBookings"><view class="nav-icon">📋</view><text>我的预约</text></view>
+    <view class="nav-item" bindtap="goNotices"><view class="nav-icon">📢</view><text>场馆公告</text></view>
+  </view>
+ 
+  <!-- 热门场地 -->
+  <view class="section-title">
+    <text>热门场地</text>
+    <text class="more" bindtap="goVenues">查看全部 ›</text>
+  </view>
+  <view class="venue-card" wx:for="{{venues}}" wx:key="id" bindtap="goVenue" data-id="{{item.id}}">
+    <view class="venue-cover">{{item.categoryName === '攀岩类' ? '🧗' : item.categoryName === '滑板类' ? '🛹' : item.categoryName === '蹦极类' ? '🪂' : '🏟️'}}</view>
+    <view class="venue-info">
+      <view class="venue-name">{{item.venueName}}</view>
+      <view class="venue-meta">{{item.venueAddress}} · 容量{{item.capacity}}人</view>
+      <view class="venue-bottom">
+        <text class="price">¥{{item.feeAmount}}{{item.feeType === 'ONCE' ? '/次' : '/小时'}}</text>
+        <text class="tag" wx:if="{{item.status !== 'AVAILABLE'}}">维护中</text>
+      </view>
+    </view>
+  </view>
+  <view class="empty" wx:if="{{venues.length === 0}}">加载中...</view>
+</view>

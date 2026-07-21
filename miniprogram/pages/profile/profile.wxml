@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="header">
+    <view class="avatar">{{avatarText}}</view>
+    <view class="info">
+      <view class="name">{{displayName}}</view>
+      <view class="phone">{{displayPhone}}</view>
+    </view>
+  </view>
+ 
+  <view class="menu">
+    <view class="menu-item" bindtap="goMyBookings"><text>📋 我的预约</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goMyRegistrations"><text>✍️ 我的报名</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goNotices"><text>📢 场馆公告</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="onAbout"><text>ℹ️ 关于系统</text><text class="arrow">›</text></view>
+  </view>
+ 
+  <button class="logout" bindtap="onLogout">退出登录</button>
+</view>
