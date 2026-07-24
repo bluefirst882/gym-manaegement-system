@@ -49,19 +49,19 @@ public class EquipmentRentalService {
         }
 
         int requestedQty = rental.getQuantity() != null ? rental.getQuantity() : 1;
-        if (equipment.getAvailableQuantity() < requestedQty) {
-            throw new BusinessException("设备可用库存不足，当前可用: " + equipment.getAvailableQuantity());
+        if (requestedQty <= 0) {
+            throw new BusinessException("租用数量必须大于0");
+        }
+        if (equipmentMapper.decreaseAvailableStock(equipment.getId(), requestedQty) == 0) {
+            Equipment latest = equipmentMapper.selectById(rental.getEquipmentId());
+            int available = latest == null ? 0 : latest.getAvailableQuantity();
+            throw new BusinessException("设备可用库存不足，当前可用: " + available);
         }
 
+        rental.setQuantity(requestedQty);
         rental.setRentalNo(generateRentalNo());
         rental.setStatus("RENTED");
         rentalMapper.insert(rental);
-
-        // 扣减库存
-        Equipment update = new Equipment();
-        update.setId(equipment.getId());
-        update.setAvailableQuantity(equipment.getAvailableQuantity() - requestedQty);
-        equipmentMapper.updateById(update);
 
         return rental;
     }
@@ -89,10 +89,7 @@ public class EquipmentRentalService {
         // 恢复库存
         Equipment equipment = equipmentMapper.selectById(rental.getEquipmentId());
         if (equipment != null) {
-            Equipment equipUpdate = new Equipment();
-            equipUpdate.setId(equipment.getId());
-            equipUpdate.setAvailableQuantity(equipment.getAvailableQuantity() + rental.getQuantity());
-            equipmentMapper.updateById(equipUpdate);
+            equipmentMapper.increaseAvailableStock(equipment.getId(), rental.getQuantity());
         }
     }
 

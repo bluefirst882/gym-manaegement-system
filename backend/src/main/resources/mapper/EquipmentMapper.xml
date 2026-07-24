@@ -81,6 +81,26 @@
         WHERE id = #{id}
     </update>
 
+    <update id="increaseStock">
+        UPDATE equipment
+        SET quantity = quantity + #{quantity},
+            available_quantity = available_quantity + #{quantity}
+        WHERE id = #{id}
+    </update>
+
+    <update id="decreaseAvailableStock">
+        UPDATE equipment
+        SET available_quantity = available_quantity - #{quantity}
+        WHERE id = #{id}
+          AND available_quantity &gt;= #{quantity}
+    </update>
+
+    <update id="increaseAvailableStock">
+        UPDATE equipment
+        SET available_quantity = LEAST(quantity, available_quantity + #{quantity})
+        WHERE id = #{id}
+    </update>
+
     <delete id="deleteById">
         DELETE FROM equipment WHERE id = #{id}
     </delete>

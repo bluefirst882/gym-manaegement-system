@@ -18,5 +18,8 @@ public interface EquipmentMapper {
                    @Param("status") String status);
     int insert(Equipment equipment);
     int updateById(Equipment equipment);
+    int increaseStock(@Param("id") Integer id, @Param("quantity") Integer quantity);
+    int decreaseAvailableStock(@Param("id") Integer id, @Param("quantity") Integer quantity);
+    int increaseAvailableStock(@Param("id") Integer id, @Param("quantity") Integer quantity);
     int deleteById(Integer id);
 }
