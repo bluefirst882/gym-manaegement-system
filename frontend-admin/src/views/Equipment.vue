@@ -18,11 +18,13 @@
             <el-table-column prop="categoryName" label="分类" width="100" />
             <el-table-column prop="brand" label="品牌" width="120" />
             <el-table-column prop="location" label="存放位置" width="140" />
-            <el-table-column label="库存" width="90">
-              <template #default="{ row }">{{ row.availableQuantity }}/{{ row.quantity }}</template>
+            <el-table-column prop="quantity" label="总库存" width="80" />
+            <el-table-column prop="availableQuantity" label="可用" width="70" />
+            <el-table-column label="租用中" width="80">
+              <template #default="{ row }">{{ Math.max(0, row.quantity - row.availableQuantity) }}</template>
             </el-table-column>
             <el-table-column label="状态" width="90">
-              <template #default="{ row }"><el-tag :type="row.status === 'NORMAL' ? 'success' : 'warning'">{{ row.status === 'NORMAL' ? '正常' : row.status }}</el-tag></template>
+              <template #default="{ row }"><el-tag :type="equipmentStatusTag(row.status)">{{ equipmentStatusText(row.status) }}</el-tag></template>
             </el-table-column>
             <el-table-column label="操作" width="160" fixed="right">
               <template #default="{ row }">
@@ -88,6 +90,9 @@
             <el-table-column prop="equipmentName" label="设备" min-width="160" />
             <el-table-column prop="maintenanceTime" label="维护时间" width="160" />
             <el-table-column prop="personnel" label="维护人员" width="110" />
+            <el-table-column label="设备情况" width="100">
+              <template #default="{ row }"><el-tag :type="conditionTag(row.equipmentCondition)">{{ conditionText(row.equipmentCondition) }}</el-tag></template>
+            </el-table-column>
           </el-table>
         </el-tab-pane>
       </el-tabs>
@@ -146,8 +151,8 @@
         <el-form-item label="租借人"><el-input v-model="rentalForm.borrower" /></el-form-item>
         <el-form-item label="联系电话"><el-input v-model="rentalForm.contactPhone" /></el-form-item>
         <el-form-item label="租借价格"><el-input-number v-model="rentalForm.rentalPrice" :min="0" /></el-form-item>
-        <el-form-item label="开始时间"><el-date-picker v-model="rentalForm.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" style="width:100%" /></el-form-item>
-        <el-form-item label="结束时间"><el-date-picker v-model="rentalForm.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" style="width:100%" /></el-form-item>
+        <el-form-item label="开始时间"><el-date-picker v-model="rentalForm.startTime" type="datetime" value-format="YYYY-MM-DDTHH:mm:ss" style="width:100%" /></el-form-item>
+        <el-form-item label="结束时间"><el-date-picker v-model="rentalForm.endTime" type="datetime" value-format="YYYY-MM-DDTHH:mm:ss" style="width:100%" /></el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="rentalDialog = false">取消</el-button>
@@ -162,9 +167,16 @@
         <el-form-item label="设备">
           <el-select v-model="maintenanceForm.equipmentId"><el-option v-for="e in list" :key="e.id" :label="e.name" :value="e.id" /></el-select>
         </el-form-item>
-        <el-form-item label="维护时间"><el-date-picker v-model="maintenanceForm.maintenanceTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" style="width:100%" /></el-form-item>
+        <el-form-item label="维护时间"><el-date-picker v-model="maintenanceForm.maintenanceTime" type="datetime" value-format="YYYY-MM-DDTHH:mm:ss" style="width:100%" /></el-form-item>
         <el-form-item label="维护内容"><el-input v-model="maintenanceForm.content" type="textarea" :rows="2" /></el-form-item>
         <el-form-item label="维护人员"><el-input v-model="maintenanceForm.personnel" /></el-form-item>
+        <el-form-item label="设备情况">
+          <el-select v-model="maintenanceForm.equipmentCondition" style="width:100%">
+            <el-option label="正常" value="NORMAL" />
+            <el-option label="维修中" value="REPAIRING" />
+            <el-option label="报废" value="SCRAPPED" />
+          </el-select>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="maintenanceDialog = false">取消</el-button>
@@ -199,6 +211,11 @@ const form = ref({})
 const purchaseForm = ref({})
 const rentalForm = ref({})
 const maintenanceForm = ref({})
+
+const equipmentStatusText = (status) => ({ NORMAL: '正常', FAULT: '故障/维修', SCRAPPED: '报废', RENTED: '已借出' }[status] || status)
+const equipmentStatusTag = (status) => ({ NORMAL: 'success', FAULT: 'warning', SCRAPPED: 'danger', RENTED: 'info' }[status] || 'info')
+const conditionText = (condition) => ({ NORMAL: '正常', REPAIRING: '维修中', SCRAPPED: '报废' }[condition] || condition)
+const conditionTag = (condition) => ({ NORMAL: 'success', REPAIRING: 'warning', SCRAPPED: 'danger' }[condition] || 'info')
  
 async function loadCats() { try { const d = await listEquipmentCategories({ pageNumber: 1, pageSize: 100 }); categories.value = d.list || [] } catch (e) {} }
 async function loadList() { loading.value = true; try { const d = await listEquipment(qList); list.value = d.list || [] } catch (e) {} finally { loading.value = false } }
@@ -226,7 +243,7 @@ async function onDelete(row) {
  
 function openPurchase() { purchaseForm.value = { equipmentId: null, quantity: 1, purchasePrice: 0, purchaseDate: '', supplier: '' }; purchaseDialog.value = true }
 function onPickEquipment(id) { const e = list.value.find((x) => x.id === id); if (e) purchaseForm.value.equipmentName = e.name }
-async function submitPurchase() { try { await addPurchase(purchaseForm.value); ElMessage.success('已保存'); purchaseDialog.value = false; loadPurchases() } catch (e) {} }
+async function submitPurchase() { try { await addPurchase(purchaseForm.value); ElMessage.success('购买入库成功'); purchaseDialog.value = false; loadPurchases(); loadList() } catch (e) {} }
  
 function openRental() { rentalForm.value = { equipmentId: null, quantity: 1, borrower: '', contactPhone: '', rentalPrice: 0, startTime: '', endTime: '' }; rentalDialog.value = true }
 async function submitRental() { try { await addRental(rentalForm.value); ElMessage.success('租用成功'); rentalDialog.value = false; loadRentals(); loadList() } catch (e) {} }
@@ -234,8 +251,8 @@ async function onReturn(row) {
   try { await ElMessageBox.confirm(`确认设备「${row.equipmentName}」已归还？`, '归还登记', { type: 'warning' }); await returnRental(row.id, {}); ElMessage.success('已归还'); loadRentals(); loadList() } catch (e) {}
 }
  
-function openMaintenance() { maintenanceForm.value = { title: '', equipmentId: null, maintenanceTime: '', content: '', personnel: '设备维护部' }; maintenanceDialog.value = true }
-async function submitMaintenance() { try { await addMaintenance(maintenanceForm.value); ElMessage.success('已保存'); maintenanceDialog.value = false; loadMaintenances() } catch (e) {} }
+function openMaintenance() { maintenanceForm.value = { title: '', equipmentId: null, maintenanceTime: '', content: '', personnel: '设备维护部', equipmentCondition: 'NORMAL' }; maintenanceDialog.value = true }
+async function submitMaintenance() { try { await addMaintenance(maintenanceForm.value); ElMessage.success('维护记录已保存'); maintenanceDialog.value = false; loadMaintenances(); loadList() } catch (e) {} }
  
 onMounted(() => { loadCats(); loadList(); loadPurchases(); loadRentals(); loadMaintenances() })
 </script>

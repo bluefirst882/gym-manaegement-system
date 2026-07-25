@@ -27,8 +27,8 @@
     }
   },
   "compileType": "miniprogram",
-  "libVersion": "3.4.0",
-  "appid": "wxf7715bcdaaf1084d",
+  "libVersion": "3.17.0",
+  "appid": "wx67b881c17b0a6448",
   "projectname": "extreme-sports-venue",
   "condition": {},
   "simulatorPluginLibVersion": {},

@@ -56,4 +56,19 @@ class ActivityServiceTest {
         System.out.println("created activityId: " + id);
         Assertions.assertNotNull(id);
     }
+
+    @Test
+    @Order(3)
+    void update_shouldModifyTime() {
+        System.out.println("\n========== ActivityServiceTest.update_修改时间 ==========");
+        org.limitless.backend.dto.ActivityUpdateRequest updateReq =
+                new org.limitless.backend.dto.ActivityUpdateRequest();
+        updateReq.setStartTime("2026-12-10 10:00:00");
+        updateReq.setEndTime("2026-12-12 16:00:00");
+        updateReq.setTitle("更新后的标题");
+
+        activityService.update(3, updateReq);
+        System.out.println("活动 3 的时间已更新为: 2026-12-10 10:00 ~ 2026-12-12 16:00");
+        System.out.println("标题更新为: 更新后的标题");
+    }
 }
