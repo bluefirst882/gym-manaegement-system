@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.EquipmentMaintenanceMapper">
+
+    <resultMap id="maintMap" type="EquipmentMaintenance">
+        <id property="id" column="id"/>
+        <result property="equipmentName" column="equipment_name"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="maintMap">
+        SELECT m.*, e.name AS equipment_name
+        FROM equipment_maintenance m
+        LEFT JOIN equipment e ON m.equipment_id = e.id
+        WHERE m.id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="maintMap">
+        SELECT m.*, e.name AS equipment_name
+        FROM equipment_maintenance m
+        LEFT JOIN equipment e ON m.equipment_id = e.id
+        <where>
+            <if test="equipmentId != null">
+                AND m.equipment_id = #{equipmentId}
+            </if>
+            <if test="maintenanceTimeStart != null and maintenanceTimeStart != ''">
+                AND m.maintenance_time >= #{maintenanceTimeStart}
+            </if>
+            <if test="maintenanceTimeEnd != null and maintenanceTimeEnd != ''">
+                AND m.maintenance_time &lt;= #{maintenanceTimeEnd}
+            </if>
+            <if test="equipmentCondition != null and equipmentCondition != ''">
+                AND m.equipment_condition = #{equipmentCondition}
+            </if>
+        </where>
+        ORDER BY m.created_at DESC
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM equipment_maintenance m
+        <where>
+            <if test="equipmentId != null">
+                AND m.equipment_id = #{equipmentId}
+            </if>
+            <if test="maintenanceTimeStart != null and maintenanceTimeStart != ''">
+                AND m.maintenance_time >= #{maintenanceTimeStart}
+            </if>
+            <if test="maintenanceTimeEnd != null and maintenanceTimeEnd != ''">
+                AND m.maintenance_time &lt;= #{maintenanceTimeEnd}
+            </if>
+            <if test="equipmentCondition != null and equipmentCondition != ''">
+                AND m.equipment_condition = #{equipmentCondition}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equipment_maintenance (maintenance_no, title, equipment_id, maintenance_time,
+                                           content, personnel, equipment_condition, images, remark)
+        VALUES (#{maintenanceNo}, #{title}, #{equipmentId}, #{maintenanceTime},
+                #{content}, #{personnel}, #{equipmentCondition}, #{images}, #{remark})
+    </insert>
+
+    <update id="updateById">
+        UPDATE equipment_maintenance
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="personnel != null">personnel = #{personnel},</if>
+            <if test="equipmentCondition != null">equipment_condition = #{equipmentCondition},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM equipment_maintenance WHERE id = #{id}
+    </delete>
+</mapper>

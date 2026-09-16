@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="empty" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:elif="{{list.length === 0}}">暂无公告</view>
+ 
+  <view class="card notice-card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+    <view class="title-row">
+      <text wx:if="{{item.isTop}}" class="top-badge">置顶</text>
+      <text class="title">{{item.title}}</text>
+    </view>
+    <view class="summary">{{item.summary}}</view>
+    <view class="time">{{item.createdAt}}</view>
+  </view>
+</view>

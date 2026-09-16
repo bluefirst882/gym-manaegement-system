@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/venues/venues",
+    "pages/venue-detail/venue-detail",
+    "pages/booking/booking",
+    "pages/my-bookings/my-bookings",
+    "pages/activities/activities",
+    "pages/activity-detail/activity-detail",
+    "pages/my-registrations/my-registrations",
+    "pages/notices/notices",
+    "pages/notice-detail/notice-detail",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ee5253",
+    "navigationBarTitleText": "极限运动馆",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#ee5253",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/venues/venues", "text": "场地" },
+      { "pagePath": "pages/activities/activities", "text": "活动" },
+      { "pagePath": "pages/profile/profile", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

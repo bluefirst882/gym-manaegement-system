@@ -1,0 +1,63 @@
+.header {
+  background: linear-gradient(135deg, #ff6b6b, #ee5253);
+  padding: 40rpx 30rpx 90rpx;
+}
+.hello { color: #fff; font-size: 40rpx; font-weight: 700; }
+.sub { color: rgba(255,255,255,0.85); font-size: 24rpx; margin-top: 8rpx; }
+ 
+.banner { margin: -70rpx 20rpx 0; height: 200rpx; border-radius: 16rpx; overflow: hidden; }
+.banner-item {
+  height: 100%;
+  background: linear-gradient(135deg, #4b6cb7, #182848);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.banner-badge { display: inline-block; background: #ee5253; color: #fff; font-size: 20rpx; padding: 4rpx 16rpx; border-radius: 20rpx; width: 70rpx; text-align: center; }
+.banner-title { color: #fff; font-size: 32rpx; font-weight: 700; margin-top: 14rpx; }
+.banner-summary { color: rgba(255,255,255,0.8); font-size: 24rpx; margin-top: 8rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ 
+.nav {
+  display: flex;
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+  padding: 30rpx 0;
+}
+.nav-item { flex: 1; text-align: center; font-size: 24rpx; color: #555; }
+.nav-icon { font-size: 50rpx; margin-bottom: 8rpx; }
+ 
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.more { font-size: 24rpx; color: #ee5253; font-weight: 400; }
+ 
+.venue-card {
+  display: flex;
+  background: #fff;
+  margin: 0 20rpx 20rpx;
+  border-radius: 16rpx;
+  padding: 20rpx;
+}
+.venue-cover {
+  width: 140rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  flex-shrink: 0;
+}
+.venue-info { flex: 1; margin-left: 20rpx; display: flex; flex-direction: column; }
+.venue-name { font-size: 30rpx; font-weight: 700; }
+.venue-meta { font-size: 22rpx; color: #999; margin-top: 8rpx; }
+.venue-bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }

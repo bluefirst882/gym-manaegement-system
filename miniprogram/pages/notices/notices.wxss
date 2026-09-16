@@ -1,0 +1,5 @@
+.notice-card .title-row { display: flex; align-items: center; gap: 12rpx; }
+.top-badge { background: #ee5253; color: #fff; font-size: 20rpx; padding: 2rpx 12rpx; border-radius: 8rpx; flex-shrink: 0; }
+.notice-card .title { font-size: 30rpx; font-weight: 700; }
+.notice-card .summary { font-size: 24rpx; color: #888; margin-top: 10rpx; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.notice-card .time { font-size: 20rpx; color: #bbb; margin-top: 12rpx; }

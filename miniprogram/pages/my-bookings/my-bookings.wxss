@@ -1,0 +1,18 @@
+.booking-card .top { display: flex; justify-content: space-between; align-items: center; }
+.booking-card .no { font-size: 22rpx; color: #999; }
+.booking-card .name { font-size: 30rpx; font-weight: 700; margin-top: 10rpx; }
+.booking-card .meta { font-size: 24rpx; color: #666; margin-top: 8rpx; }
+.booking-card .bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx dashed #eee;
+}
+.pay-status { font-size: 20rpx; margin-left: 10rpx; padding: 2rpx 12rpx; border-radius: 16rpx; }
+.pay-status.paid { background: #f6ffed; color: #389e0d; }
+.pay-status.unpaid { background: #fff7e6; color: #d48806; }
+.ops { display: flex; gap: 14rpx; }
+.pay-btn { background: linear-gradient(135deg, #ff6b6b, #ee5253); color: #fff; border-radius: 28rpx; }
+.cancel-btn { background: #f5f5f5; color: #666; border-radius: 28rpx; }

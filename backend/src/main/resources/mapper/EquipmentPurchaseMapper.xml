@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.EquipmentPurchaseMapper">
+
+    <select id="selectById" resultType="EquipmentPurchase">
+        SELECT * FROM equipment_purchase WHERE id = #{id}
+    </select>
+
+    <select id="selectPage" resultType="EquipmentPurchase">
+        SELECT * FROM equipment_purchase
+        <where>
+            <if test="equipmentName != null and equipmentName != ''">
+                AND equipment_name LIKE CONCAT('%', #{equipmentName}, '%')
+            </if>
+            <if test="purchaseDateStart != null and purchaseDateStart != ''">
+                AND purchase_date >= #{purchaseDateStart}
+            </if>
+            <if test="purchaseDateEnd != null and purchaseDateEnd != ''">
+                AND purchase_date &lt;= #{purchaseDateEnd}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM equipment_purchase
+        <where>
+            <if test="equipmentName != null and equipmentName != ''">
+                AND equipment_name LIKE CONCAT('%', #{equipmentName}, '%')
+            </if>
+            <if test="purchaseDateStart != null and purchaseDateStart != ''">
+                AND purchase_date >= #{purchaseDateStart}
+            </if>
+            <if test="purchaseDateEnd != null and purchaseDateEnd != ''">
+                AND purchase_date &lt;= #{purchaseDateEnd}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equipment_purchase (purchase_no, equipment_id, equipment_name, brand, model,
+                                        serial_number, quantity, purchase_price, purchase_date,
+                                        supplier, invoice_no, remark)
+        VALUES (#{purchaseNo}, #{equipmentId}, #{equipmentName}, #{brand}, #{model},
+                #{serialNumber}, #{quantity}, #{purchasePrice}, #{purchaseDate},
+                #{supplier}, #{invoiceNo}, #{remark})
+    </insert>
+</mapper>

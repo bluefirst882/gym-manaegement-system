@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.ActivityCategoryMapper">
+
+    <select id="selectById" resultType="ActivityCategory">
+        SELECT * FROM activity_category WHERE id = #{id}
+    </select>
+
+    <select id="selectPage" resultType="ActivityCategory">
+        SELECT * FROM activity_category
+        <where>
+            <if test="categoryName != null and categoryName != ''">
+                AND category_name LIKE CONCAT('%', #{categoryName}, '%')
+            </if>
+        </where>
+        ORDER BY sort_order ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO activity_category (category_code, category_name, category_desc, sort_order)
+        VALUES (#{categoryCode}, #{categoryName}, #{categoryDesc}, #{sortOrder})
+    </insert>
+
+    <update id="updateById">
+        UPDATE activity_category
+        <set>
+            <if test="categoryName != null">category_name = #{categoryName},</if>
+            <if test="categoryDesc != null">category_desc = #{categoryDesc},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM activity_category WHERE id = #{id}
+    </delete>
+</mapper>

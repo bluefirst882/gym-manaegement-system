@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="empty" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:elif="{{venues.length === 0}}">暂无场地</view>
+ 
+  <view class="venue-card" wx:for="{{venues}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+    <view class="venue-cover {{item.status !== 'AVAILABLE' ? 'disabled' : ''}}">
+      {{item.categoryName === '攀岩类' ? '🧗' : item.categoryName === '滑板类' ? '🛹' : item.categoryName === '蹦极类' ? '🪂' : '🏟️'}}
+    </view>
+    <view class="venue-info">
+      <view class="venue-name">
+        {{item.venueName}}
+        <text class="tag tag-warning" wx:if="{{item.status !== 'AVAILABLE'}}">维护中</text>
+      </view>
+      <view class="venue-meta">📍 {{item.venueAddress}}</view>
+      <view class="venue-meta">👥 容量 {{item.capacity}} 人 · {{item.facilities}}</view>
+      <view class="venue-bottom">
+        <text class="price">¥{{item.feeAmount}}<text class="unit">{{item.feeType === 'ONCE' ? '/次' : '/小时'}}</text></text>
+        <button class="book-btn" size="mini">预约</button>
+      </view>
+    </view>
+  </view>
+</view>

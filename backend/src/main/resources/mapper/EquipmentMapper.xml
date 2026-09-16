@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.EquipmentMapper">
+
+    <resultMap id="equipMap" type="Equipment">
+        <id property="id" column="id"/>
+        <result property="categoryName" column="category_name"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="equipMap">
+        SELECT e.*, c.category_name
+        FROM equipment e
+        LEFT JOIN equipment_category c ON e.category_id = c.id
+        WHERE e.id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="equipMap">
+        SELECT e.*, c.category_name
+        FROM equipment e
+        LEFT JOIN equipment_category c ON e.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND e.category_id = #{categoryId}
+            </if>
+            <if test="brand != null and brand != ''">
+                AND e.brand LIKE CONCAT('%', #{brand}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND e.status = #{status}
+            </if>
+        </where>
+        ORDER BY e.created_at DESC
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM equipment e
+        <where>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND e.category_id = #{categoryId}
+            </if>
+            <if test="brand != null and brand != ''">
+                AND e.brand LIKE CONCAT('%', #{brand}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND e.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equipment (equipment_no, name, category_id, brand, model, serial_number,
+                               location, responsible_person, quantity, available_quantity,
+                               status, cover_image, detail_images, remark)
+        VALUES (#{equipmentNo}, #{name}, #{categoryId}, #{brand}, #{model}, #{serialNumber},
+                #{location}, #{responsiblePerson}, #{quantity}, #{availableQuantity},
+                #{status}, #{coverImage}, #{detailImages}, #{remark})
+    </insert>
+
+    <update id="updateById">
+        UPDATE equipment
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="model != null">model = #{model},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="responsiblePerson != null">responsible_person = #{responsiblePerson},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="availableQuantity != null">available_quantity = #{availableQuantity},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="increaseStock">
+        UPDATE equipment
+        SET quantity = quantity + #{quantity},
+            available_quantity = available_quantity + #{quantity}
+        WHERE id = #{id}
+    </update>
+
+    <update id="decreaseAvailableStock">
+        UPDATE equipment
+        SET available_quantity = available_quantity - #{quantity}
+        WHERE id = #{id}
+          AND available_quantity &gt;= #{quantity}
+    </update>
+
+    <update id="increaseAvailableStock">
+        UPDATE equipment
+        SET available_quantity = LEAST(quantity, available_quantity + #{quantity})
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM equipment WHERE id = #{id}
+    </delete>
+</mapper>

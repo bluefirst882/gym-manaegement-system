@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.ActivityMapper">
+
+    <resultMap id="activityMap" type="Activity">
+        <id property="id" column="id"/>
+        <result property="categoryName" column="category_name"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="activityMap">
+        SELECT a.*, c.category_name
+        FROM activity a
+        LEFT JOIN activity_category c ON a.category_id = c.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="selectPage" resultMap="activityMap">
+        SELECT a.*, c.category_name
+        FROM activity a
+        LEFT JOIN activity_category c ON a.category_id = c.id
+        <where>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND a.category_id = #{categoryId}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+        </where>
+        ORDER BY a.created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO activity (activity_no, title, cover_image, category_id, location,
+                              start_time, end_time, status, registration_method, max_participants,
+                              awards, rules, description, contact, fee_type, fee_amount)
+        VALUES (#{activityNo}, #{title}, #{coverImage}, #{categoryId}, #{location},
+                #{startTime}, #{endTime}, #{status}, #{registrationMethod}, #{maxParticipants},
+                #{awards}, #{rules}, #{description}, #{contact}, #{feeType}, #{feeAmount})
+    </insert>
+
+    <update id="updateById">
+        UPDATE activity
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="maxParticipants != null">max_participants = #{maxParticipants},</if>
+            <if test="awards != null">awards = #{awards},</if>
+            <if test="rules != null">rules = #{rules},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="feeType != null">fee_type = #{feeType},</if>
+            <if test="feeAmount != null">fee_amount = #{feeAmount},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM activity WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,22 @@
+.banner {
+  height: 320rpx;
+  background: linear-gradient(135deg, #ff6b6b, #ee5253);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 140rpx;
+}
+.card { margin-top: -30rpx; position: relative; }
+.name { font-size: 36rpx; font-weight: 700; margin-bottom: 16rpx; }
+.row { display: flex; padding: 12rpx 0; border-bottom: 1rpx dashed #eee; font-size: 26rpx; }
+.row:last-child { border-bottom: none; }
+.label { color: #999; width: 120rpx; flex-shrink: 0; }
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx;
+  background: #fff;
+  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
+}

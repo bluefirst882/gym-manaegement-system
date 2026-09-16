@@ -1,0 +1,25 @@
+.venue-card {
+  display: flex;
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+  padding: 20rpx;
+}
+.venue-cover {
+  width: 160rpx;
+  height: 160rpx;
+  background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 70rpx;
+  flex-shrink: 0;
+}
+.venue-cover.disabled { filter: grayscale(1); opacity: 0.6; }
+.venue-info { flex: 1; margin-left: 20rpx; display: flex; flex-direction: column; }
+.venue-name { font-size: 30rpx; font-weight: 700; display: flex; align-items: center; gap: 10rpx; }
+.venue-meta { font-size: 22rpx; color: #999; margin-top: 8rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.venue-bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+.unit { font-size: 20rpx; font-weight: 400; color: #999; }
+.book-btn { background: linear-gradient(135deg, #ff6b6b, #ee5253); color: #fff; border-radius: 30rpx; font-size: 24rpx; padding: 0 30rpx; }

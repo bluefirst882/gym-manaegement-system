@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.limitless.backend.mapper.StatisticsMapper">
+
+    <select id="selectVenueUsage" resultType="java.util.Map">
+        SELECT
+            v.id AS venueId,
+            v.venue_name AS venueName,
+            COUNT(b.id) AS totalBookings,
+            SUM(CASE WHEN b.status = 'COMPLETED' THEN 1 ELSE 0 END) AS completedBookings,
+            COALESCE(SUM(b.duration_hours), 0) AS totalHours,
+            COALESCE(SUM(b.fee_amount), 0) AS totalRevenue
+        FROM venue v
+        LEFT JOIN booking b ON v.id = b.venue_id
+            <if test="startDate != null and startDate != ''">
+                AND b.booking_date >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND b.booking_date &lt;= #{endDate}
+            </if>
+        <where>
+            <if test="venueId != null">
+                AND v.id = #{venueId}
+            </if>
+        </where>
+        GROUP BY v.id, v.venue_name
+        ORDER BY totalBookings DESC
+    </select>
+
+    <select id="selectActivityStats" resultType="java.util.Map">
+        SELECT
+            a.id AS activityId,
+            a.title AS activityTitle,
+            COUNT(r.id) AS totalRegistrations,
+            SUM(CASE WHEN r.audit_status = 'APPROVED' THEN 1 ELSE 0 END) AS approvedCount
+        FROM activity a
+        LEFT JOIN activity_registration r ON a.id = r.activity_id
+            <if test="startDate != null and startDate != ''">
+                AND r.created_at >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND r.created_at &lt;= #{endDate}
+            </if>
+        <where>
+            <if test="categoryId != null">
+                AND a.category_id = #{categoryId}
+            </if>
+        </where>
+        GROUP BY a.id, a.title
+        ORDER BY totalRegistrations DESC
+    </select>
+
+</mapper>

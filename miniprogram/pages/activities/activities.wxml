@@ -1,0 +1,17 @@
+<view class="container">
+  <view class="empty" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:elif="{{list.length === 0}}">暂无活动</view>
+ 
+  <view class="card act-card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+    <view class="act-cover">{{item.categoryName === '赛事活动' ? '🏆' : item.categoryName === '体验活动' ? '🎯' : item.categoryName === '培训课程' ? '📚' : '🎉'}}</view>
+    <view class="act-info">
+      <view class="act-title">{{item.title}}</view>
+      <view class="act-meta">📍 {{item.location}}</view>
+      <view class="act-meta">🕐 {{item.startTime}} 开始</view>
+      <view class="act-bottom">
+        <text class="tag tag-{{item.status === 'IN_PROGRESS' ? 'warning' : 'primary'}}">{{item.status === 'NOT_STARTED' ? '未开始' : item.status === 'IN_PROGRESS' ? '进行中' : item.status === 'ENDED' ? '已结束' : '草稿'}}</text>
+        <text class="fee {{item.feeType === 'FREE' ? 'free' : ''}}">{{item.feeType === 'FREE' ? '免费' : '¥' + item.feeAmount}}</text>
+      </view>
+    </view>
+  </view>
+</view>

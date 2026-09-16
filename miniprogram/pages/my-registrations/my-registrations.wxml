@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="empty" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:elif="{{list.length === 0}}">暂无报名记录</view>
+ 
+  <view class="card reg-card" wx:for="{{list}}" wx:key="id">
+    <view class="top">
+      <text class="no">{{item.registrationNo}}</text>
+      <text class="tag tag-{{item.auditStatus === 'APPROVED' ? 'success' : item.auditStatus === 'PENDING' ? 'warning' : 'info'}}">
+        {{item.auditStatus === 'PENDING' ? '待审核' : item.auditStatus === 'APPROVED' ? '已通过' : item.auditStatus === 'REJECTED' ? '已拒绝' : '已取消'}}
+      </text>
+    </view>
+    <view class="name">{{item.activityTitle}}</view>
+    <view class="meta">报名类型：{{item.activityType}}</view>
+    <view class="bottom">
+      <text class="time">{{item.createdAt}}</text>
+      <button wx:if="{{item.auditStatus === 'PENDING'}}" size="mini" class="cancel-btn" data-id="{{item.id}}" bindtap="onCancel">取消报名</button>
+    </view>
+  </view>
+</view>

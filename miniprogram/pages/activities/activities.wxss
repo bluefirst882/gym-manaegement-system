@@ -1,0 +1,18 @@
+.act-card { display: flex; }
+.act-cover {
+  width: 150rpx;
+  height: 150rpx;
+  background: linear-gradient(135deg, #e8f0fe, #dbe7fd);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 66rpx;
+  flex-shrink: 0;
+}
+.act-info { flex: 1; margin-left: 20rpx; display: flex; flex-direction: column; }
+.act-title { font-size: 29rpx; font-weight: 700; }
+.act-meta { font-size: 22rpx; color: #999; margin-top: 8rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.act-bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+.fee { color: #ee5253; font-weight: 700; font-size: 26rpx; }
+.fee.free { color: #389e0d; }
