@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
@@ -42,6 +43,10 @@ public class BookingService {
                 request.getPageSize(), pageInfo.getTotal());
     }
 
+    public Booking selectById(Long id) {
+        return bookingMapper.selectById(id);
+    }
+
     @Transactional
     public Booking create(BookingCreateRequest request) {
         if (request.getUserId() == null) {
@@ -51,7 +56,8 @@ public class BookingService {
             throw new BusinessException("场地ID不能为空");
         }
 
-        Venue venue = venueMapper.selectById(request.getVenueId());
+        // 串行化同一场地的预约创建，避免并发请求同时通过“先查后插”。
+        Venue venue = venueMapper.lockForBooking(request.getVenueId());
         if (venue == null) {
             throw new BusinessException("场地不存在");
         }
@@ -76,14 +82,15 @@ public class BookingService {
         }
 
         // 计算时长
-        double hours = ChronoUnit.MINUTES.between(startTime, endTime) / 60.0;
+        long minutes = ChronoUnit.MINUTES.between(startTime, endTime);
+        BigDecimal hours = BigDecimal.valueOf(minutes).divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
 
         // 计算费用
         BigDecimal feeAmount = BigDecimal.ZERO;
         if ("ONCE".equals(venue.getFeeType())) {
             feeAmount = venue.getFeeAmount();
         } else if ("PER_HOUR".equals(venue.getFeeType())) {
-            feeAmount = venue.getFeeAmount().multiply(BigDecimal.valueOf(hours));
+            feeAmount = venue.getFeeAmount().multiply(hours).setScale(2, RoundingMode.HALF_UP);
         }
 
         Booking booking = new Booking();
@@ -95,7 +102,7 @@ public class BookingService {
         booking.setBookingDate(bookingDate);
         booking.setStartTime(startTime);
         booking.setEndTime(endTime);
-        booking.setDurationHours(BigDecimal.valueOf(hours));
+        booking.setDurationHours(hours);
         booking.setRemark(request.getRemark());
         booking.setStatus("PENDING");
         booking.setSource("BACKEND");
@@ -114,10 +121,9 @@ public class BookingService {
         if (!"PENDING".equals(booking.getStatus()) && !"APPROVED".equals(booking.getStatus())) {
             throw new BusinessException("当前状态不允许取消");
         }
-        Booking update = new Booking();
-        update.setId(id);
-        update.setStatus("CANCELLED");
-        bookingMapper.updateById(update);
+        if (bookingMapper.updateStatusIfCurrent(id, booking.getStatus(), "CANCELLED") != 1) {
+            throw new BusinessException("预约状态已发生变化，请刷新后重试");
+        }
     }
 
     public void audit(Long id, BookingAuditRequest request) {
@@ -131,10 +137,9 @@ public class BookingService {
         if (!"APPROVED".equals(request.getStatus()) && !"REJECTED".equals(request.getStatus())) {
             throw new BusinessException("审核状态必须为通过或拒绝");
         }
-        Booking update = new Booking();
-        update.setId(id);
-        update.setStatus(request.getStatus());
-        bookingMapper.updateById(update);
+        if (bookingMapper.updateStatusIfCurrent(id, "PENDING", request.getStatus()) != 1) {
+            throw new BusinessException("预约状态已发生变化，请刷新后重试");
+        }
     }
 
     public void delete(Long id) {
@@ -150,7 +155,8 @@ public class BookingService {
         if (booking == null) {
             throw new BusinessException("预约记录不存在");
         }
-        if (!"APPROVED".equals(booking.getStatus())) {
+        if (!"APPROVED".equals(booking.getStatus()) || booking.getCheckinTime() != null
+                || booking.getCheckoutTime() != null) {
             throw new BusinessException("只有已通过的预约才能到店登记");
         }
 
@@ -160,7 +166,9 @@ public class BookingService {
                 LocalDateTime.parse(request.getCheckinTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) :
                 LocalDateTime.now());
         update.setAttendeeCount(request.getAttendeeCount());
-        bookingMapper.updateById(update);
+        if (bookingMapper.updateById(update) != 1) {
+            throw new BusinessException("到店登记失败，请刷新后重试");
+        }
     }
 
     public Object checkout(Long id, CheckoutRequest request) {
@@ -169,13 +177,19 @@ public class BookingService {
             throw new BusinessException("预约记录不存在");
         }
 
+        if (!"APPROVED".equals(booking.getStatus()) || booking.getCheckinTime() == null
+                || booking.getCheckoutTime() != null) {
+            throw new BusinessException("只有已到店且未离店的预约才能离店");
+        }
         Booking update = new Booking();
         update.setId(id);
         update.setCheckoutTime(request.getCheckoutTime() != null ?
                 LocalDateTime.parse(request.getCheckoutTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) :
                 LocalDateTime.now());
         update.setStatus("COMPLETED");
-        bookingMapper.updateById(update);
+        if (bookingMapper.updateById(update) != 1) {
+            throw new BusinessException("离店登记失败，请刷新后重试");
+        }
 
         Venue venue = venueMapper.selectById(booking.getVenueId());
         String feeDetail;
@@ -200,11 +214,16 @@ public class BookingService {
             throw new BusinessException("该预约已支付");
         }
 
+        if (!"PENDING".equals(booking.getStatus()) && !"APPROVED".equals(booking.getStatus())) {
+            throw new BusinessException("当前状态不允许支付");
+        }
         Booking update = new Booking();
         update.setId(id);
         update.setPaymentStatus("PAID");
         update.setPaymentMethod(request.getPaymentMethod());
-        bookingMapper.updateById(update);
+        if (bookingMapper.updateById(update) != 1) {
+            throw new BusinessException("支付状态更新失败，请刷新后重试");
+        }
     }
 
     public void updatePaymentStatus(Long id, PaymentStatusRequest request) {
@@ -213,6 +232,12 @@ public class BookingService {
             throw new BusinessException("预约记录不存在");
         }
 
+        if (!List.of("UNPAID", "PAID", "REFUNDED").contains(request.getPaymentStatus())) {
+            throw new BusinessException("缴费状态不合法");
+        }
+        if (request.getAmount() != null && request.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessException("金额不能为负数");
+        }
         Booking update = new Booking();
         update.setId(id);
         update.setPaymentStatus(request.getPaymentStatus());
@@ -220,11 +245,13 @@ public class BookingService {
         if (request.getAmount() != null) {
             update.setFeeAmount(request.getAmount());
         }
-        bookingMapper.updateById(update);
+        if (bookingMapper.updateById(update) != 1) {
+            throw new BusinessException("缴费状态更新失败，请刷新后重试");
+        }
     }
 
     private String generateBookingNo() {
         return "B" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-               + String.format("%03d", (int)(Math.random() * 1000));
+               + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
 }

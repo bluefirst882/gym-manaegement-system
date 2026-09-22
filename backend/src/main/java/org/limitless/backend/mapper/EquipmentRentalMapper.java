@@ -20,4 +20,6 @@ public interface EquipmentRentalMapper {
                    @Param("startTimeEnd") String startTimeEnd);
     int insert(EquipmentRental rental);
     int updateById(EquipmentRental rental);
+
+    int returnIfRented(@Param("id") Integer id, @Param("actualReturnTime") java.time.LocalDateTime actualReturnTime);
 }

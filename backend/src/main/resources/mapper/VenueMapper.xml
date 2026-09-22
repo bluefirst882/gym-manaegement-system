@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.limitless.backend.mapper.VenueMapper">
 
+    <select id="lockForBooking" resultType="Venue">
+        SELECT * FROM venue WHERE id = #{id} FOR UPDATE
+    </select>
+
     <resultMap id="venueMap" type="Venue">
         <id property="id" column="id"/>
         <result property="categoryName" column="category_name"/>

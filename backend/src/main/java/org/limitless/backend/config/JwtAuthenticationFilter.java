@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.limitless.backend.util.JwtUtil;
+import org.limitless.backend.mapper.SysRoleMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final SysRoleMapper roleMapper;
 
     // 不需要认证的路径
     private static final String[] EXCLUDED_PATHS = {
@@ -26,8 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/admin-login"
     };
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, SysRoleMapper roleMapper) {
         this.jwtUtil = jwtUtil;
+        this.roleMapper = roleMapper;
     }
 
     @Override
@@ -77,6 +80,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Integer roleId = jwtUtil.getRoleId(token);
             request.setAttribute("currentUserId", userId);
             request.setAttribute("currentRoleId", roleId);
+            if (roleId != null) {
+                var role = roleMapper.selectById(roleId);
+                if (role != null) request.setAttribute("currentRoleCode", role.getRoleCode());
+            }
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=utf-8");

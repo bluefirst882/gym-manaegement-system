@@ -37,6 +37,10 @@ public class EquipmentRentalService {
         return new PageResult<>(pageInfo.getList(), pageNumber, pageSize, pageInfo.getTotal());
     }
 
+    public EquipmentRental selectById(Integer id) {
+        return rentalMapper.selectById(id);
+    }
+
     @Transactional
     public EquipmentRental create(EquipmentRental rental) {
         if (rental.getEquipmentId() == null) {
@@ -76,15 +80,12 @@ public class EquipmentRentalService {
             throw new BusinessException("该设备已归还");
         }
 
-        EquipmentRental update = new EquipmentRental();
-        update.setId(id);
-        update.setStatus("RETURNED");
-        if (actualReturnTime != null) {
-            update.setActualReturnTime(LocalDateTime.parse(actualReturnTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        } else {
-            update.setActualReturnTime(LocalDateTime.now());
+        LocalDateTime returnTime = actualReturnTime != null
+                ? LocalDateTime.parse(actualReturnTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                : LocalDateTime.now();
+        if (rentalMapper.returnIfRented(id, returnTime) != 1) {
+            throw new BusinessException("该设备已归还或状态已发生变化");
         }
-        rentalMapper.updateById(update);
 
         // 恢复库存
         Equipment equipment = equipmentMapper.selectById(rental.getEquipmentId());

@@ -74,4 +74,10 @@
         </set>
         WHERE id = #{id}
     </update>
+
+    <update id="returnIfRented">
+        UPDATE equipment_rental
+        SET status = 'RETURNED', actual_return_time = #{actualReturnTime}
+        WHERE id = #{id} AND status = 'RENTED'
+    </update>
 </mapper>

@@ -8,6 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface VenueMapper {
+    Venue lockForBooking(Integer id);
     Venue selectById(Integer id);
 
     List<Venue> selectPage(@Param("venueName") String venueName,

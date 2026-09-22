@@ -16,6 +16,11 @@
         WHERE b.id = #{id}
     </select>
 
+    <update id="updateStatusIfCurrent">
+        UPDATE booking SET status = #{toStatus}
+        WHERE id = #{id} AND status = #{fromStatus}
+    </update>
+
     <select id="selectPage" resultMap="bookingMap">
         SELECT b.*, u.real_name AS customer_name, u.phone AS customer_phone
         FROM booking b

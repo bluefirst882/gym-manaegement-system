@@ -1,0 +1,7 @@
+.idea/
+backend/target/
+frontend-admin/node_modules/
+frontend-admin/dist/
+*.log
+.env
+

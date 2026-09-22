@@ -10,6 +10,10 @@ import java.util.List;
 public interface BookingMapper {
     Booking selectById(Long id);
 
+    int updateStatusIfCurrent(@Param("id") Long id,
+                              @Param("fromStatus") String fromStatus,
+                              @Param("toStatus") String toStatus);
+
     List<Booking> selectPage(@Param("bookingNo") String bookingNo,
                              @Param("userId") Integer userId,
                              @Param("venueId") Integer venueId,
