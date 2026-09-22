@@ -123,7 +123,7 @@ WHERE id = #{id}
 docker compose up -d --build
 ```
 
-管理端访问 `http://localhost:5173`，后端访问 `http://localhost:8080`。Compose 会启动管理端 Nginx、Spring Boot、MySQL 8.4 和 Redis 7.4；管理端的 `/api` 请求由 Nginx 转发到后端。
+管理端访问 `http://localhost:5173`，后端访问 `http://localhost:8082`。Compose 会启动管理端 Nginx、Spring Boot、MySQL 8.4 和 Redis 7.4；管理端的 `/api` 请求由 Nginx 转发到后端。后端宿主机端口可通过 `BACKEND_HOST_PORT` 修改。
 
 停止容器但保留数据库：
 
@@ -177,7 +177,7 @@ cd backend
 ./mvnw spring-boot:run        # Windows: mvnw.cmd spring-boot:run
 ```
 
-后端默认监听 `http://localhost:8080`。
+后端默认监听 `http://localhost:8082`。
 
 ### 4. 启动管理端
 
