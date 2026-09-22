@@ -115,6 +115,37 @@ WHERE id = #{id}
 
 ## 快速开始
 
+### Docker Compose 全容器启动
+
+复制 `.env.example` 为 `.env`，设置 `MYSQL_ROOT_PASSWORD` 和随机的 `JWT_SECRET`，然后执行：
+
+```bash
+docker compose up -d --build
+```
+
+管理端访问 `http://localhost:5173`，后端访问 `http://localhost:8080`。Compose 会启动管理端 Nginx、Spring Boot、MySQL 8.4 和 Redis 7.4；管理端的 `/api` 请求由 Nginx 转发到后端。
+
+停止容器但保留数据库：
+
+```bash
+docker compose down
+```
+
+结束本次测试并同时删除本项目数据库/Redis 数据卷（会清空测试数据）：
+
+```bash
+docker compose down --volumes --remove-orphans
+```
+
+仅清理本项目无用镜像和悬空构建缓存：
+
+```bash
+docker image prune -f
+docker builder prune -f
+```
+
+不要在日常停止服务时使用 `docker system prune --volumes`，它可能删除其他项目的未使用数据卷。
+
 ### 1. 数据库
 
 ```bash

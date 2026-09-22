@@ -3,9 +3,9 @@ spring:
     name: backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/extreme_sports_venue?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: admin
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:extreme_sports_venue}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:admin}
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
@@ -24,8 +24,8 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 jwt:
-  secret: gym-management-system-secret-key-2026-very-long-string-for-hmac-sha256
-  expiration: 86400000
+  secret: ${JWT_SECRET:gym-management-system-secret-key-2026-very-long-string-for-hmac-sha256}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 pagehelper:
   helper-dialect: mysql
@@ -33,4 +33,4 @@ pagehelper:
   support-methods-arguments: true
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
